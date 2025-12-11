@@ -1,0 +1,29 @@
+[files]
+# Path to the directory where channel folders are. Expected structure: root_dir -> channel_dir -> YYYY-MM-DD.log 
+#
+# logs/
+#   #russian/
+#     2025-12-01.log
+#     2025-12-02.log.gz
+#     ...
+#   #osu/
+#     2025-12-01.log
+#     ...
+logs_path = "."
+
+# Path to the directory with templates.
+template_dir = "./templates"
+
+# Path to the output directory (will be created if does not exist).
+
+generate_to = "./irc-stats"
+
+# Template of the output file's name -- %s is replaced with the channel folder's name.
+save_as = "%s_curr_month.html"
+
+[date]
+# Which year to generate statistics for. Can be a regexp, or a 4 digit number.
+year = "current"
+
+# Which month to generate statistics for. Can be a regexp, or a number (01-12).
+month = "current"
