@@ -137,11 +137,19 @@ class Url:
 
 
 class APIClient:
+    _UID_CACHE_PATH = os.path.join(os.path.dirname(__file__), ".uid-cache.toml")
+
     def __init__(self, credentials_path):
+        self._cache = {}
+
         with open(credentials_path, "rb") as fd:
             data = tomllib.load(fd)
+            try:
+                with open(self._UID_CACHE_PATH, "rb") as fd:
+                    self._cache = tomllib.load(fd)
+            except OSError:
+                pass
 
-        self._cache = {}
         self.api = ossapi.Ossapi(
             client_id=data["client_id"],
             client_secret=data["client_secret"],
@@ -153,6 +161,11 @@ class APIClient:
             try:
                 data = self.api.user(f"@{username}")
                 self._cache[username] = data.id
+                try:
+                    with open(self._UID_CACHE_PATH, "a") as fd:
+                        fd.write(f"\"{username}\" = {data.id}\n")
+                except OSError:
+                    pass  # don't sweat over it
             except Exception as e:
                 debug(e)
         
