@@ -15,15 +15,15 @@ logs_path = "."
 template_dir = "./templates"
 
 # Path to the output directory (will be created if does not exist).
-
 generate_to = "./irc-stats"
 
 # Template of the output file's name -- %s is replaced with the channel folder's name.
 save_as = "%s_curr_month.html"
 
 [date]
-# Which year to generate statistics for. Can be a regexp, or a 4 digit number.
+# Which year and month to generate statistics for. Both values can be numbers, regular expressions (backslashes need to be escaped), or the word "current".
+# Example:
+#  year = "20(24|25)"
+#  month = "\\d+"
 year = "current"
-
-# Which month to generate statistics for. Can be a regexp, or a number (01-12).
 month = "current"
