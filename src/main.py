@@ -244,10 +244,13 @@ class Main:
             case MessageType.MODE_CHANGE:
                 self.user_givemodes[u] += 1
             
-            case MessageType.REGULAR:
+            case MessageType.REGULAR | MessageType.ACTION:
                 self.activity_graph[message.time.hour] += 1
-
                 self.user_messages[u] += 1
+
+                if message.line_type == MessageType.ACTION:
+                    self.user_actions[u] += 1
+
                 self._cache_user_messages[u].append(message.text)
 
                 for url in message.parse_urls():
@@ -259,9 +262,6 @@ class Main:
 
                 if "?" in message.text:
                     self.user_question[u] += 1
-
-            case MessageType.ACTION:
-                self.user_actions[u] += 1
 
     def save_page(self):
         users_messages_desc = self.user_messages.most_common()
