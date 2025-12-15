@@ -53,7 +53,7 @@ def get_filter_mask(year=r"\d+", month=r"\d+"):
         now = datetime.datetime.now()
         month_number = now.month - 1
         year_number = now.year
-        if month_number < 0:
+        if month_number <= 0:
             month_number = month_number % 12
             year_number = year_number - 1
         month_number += 1
