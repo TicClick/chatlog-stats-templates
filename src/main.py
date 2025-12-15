@@ -99,11 +99,19 @@ class ChatMessage:
             # 16:37:03 < _dopamine> юкр.
             # 16:39:11 <@Kobold84> Юкр.
             case "<":
+                # "< nick>" splits into ["<", "nick>", ...] — nick is in contents[2]
+                # "<@nick>" splits into ["<@nick>", ...] — nick is in contents[1]
+                if len(contents[1]) == 1:
+                    username = contents[2].rstrip(">")
+                    text = " ".join(contents[3:])
+                else:
+                    username = contents[1].lstrip("<@").rstrip(">")
+                    text = " ".join(contents[2:])
                 return cls(
                     line_type=MessageType.REGULAR,
                     time=message_time,
-                    username=contents[2].rstrip(">"),
-                    text=" ".join(contents[3:]),
+                    username=username,
+                    text=text,
                 )
     
             # 16:45:29 -!- mode/#russian [+o terho] by BanchoBot
