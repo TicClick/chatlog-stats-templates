@@ -303,7 +303,7 @@ class Main:
 
         most_active: list[User] = []
         for (username, message_count) in top25:
-            debug(f"Fething profile data and random quote for: {username}")
+            debug(f"Fetching profile data and random quote for: {username}")
             uid = self.api.uid(username)
             random_quote = self._cache_user_messages.get(username)
 
