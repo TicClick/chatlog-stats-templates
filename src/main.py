@@ -4,6 +4,7 @@ import argparse
 import collections
 import dataclasses
 import datetime
+import enum
 import gzip
 import html
 import json
@@ -64,8 +65,7 @@ def get_filter_mask(year=r"\d+", month=r"\d+"):
     return re.compile(r"(%s)\-(%s)\-\d+\.\w+" % (year, month), re.IGNORECASE)
 
 
-@dataclasses.dataclass
-class MessageType:
+class MessageType(enum.IntEnum):
     REGULAR = 0
     ACTION = 1
     MODE_CHANGE = 2
