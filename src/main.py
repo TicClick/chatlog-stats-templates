@@ -316,13 +316,6 @@ class Main:
                 )
             )
 
-        # graph percentage calculation
-        sum = 0
-        for i in self.activity_graph:
-            sum += i
-        sum = sum/240.0
-        for i in range(0, 24):
-            self.activity_graph[i] = int(self.activity_graph[i])
 
         being = {
             "screaming": self.user_exclamation.most_common(2),
