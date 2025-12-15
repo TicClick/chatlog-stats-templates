@@ -172,6 +172,27 @@ class APIClient:
         return self._cache.get(username)
 
 
+# Needed for two reasons: 1) avoid falling back to external tools, and 2) avoid keeping logs in memory.
+# See https://en.wikipedia.org/wiki/Reservoir_sampling for details.
+class ReservoirSampler:
+    def __init__(self):
+        self._storage = {}
+        self._counter = collections.Counter()
+
+    def consider(self, k, v):
+        self._counter[k] += 1
+        if k not in self._storage:
+            self._storage[k] = v
+        else:
+            curr_idx = self._counter[k]
+            chosen_element_idx = random.randint(1, curr_idx)
+            if chosen_element_idx == 1:
+                self._storage[k] = v
+
+    def get(self, k):
+        return self._storage.get(k)
+
+
 class Main:
     def __init__(self, config_path: str, channel: str, api_credentials_path: str):
         with open(config_path, "rb") as fd:
@@ -195,7 +216,7 @@ class Main:
         self.user_actions: collections.Counter[str] = collections.Counter()
         self.user_givemodes: collections.Counter[str] = collections.Counter()
 
-        self._cache_user_messages: dict[str, list[str]] = collections.defaultdict(list)
+        self._cache_user_messages = ReservoirSampler()
 
         self.activity_graph = [0]*24
 
@@ -251,7 +272,7 @@ class Main:
                 if message.line_type == MessageType.ACTION:
                     self.user_actions[u] += 1
 
-                self._cache_user_messages[u].append(message.text)
+                self._cache_user_messages.consider(u, message.text)
 
                 for url in message.parse_urls():
                     self.url_count[url] += 1
@@ -276,7 +297,7 @@ class Main:
         for (username, message_count) in top25:
             debug(f"Fething profile data and random quote for: {username}")
             uid = self.api.uid(username)
-            random_quote = random.choice(self._cache_user_messages[username])
+            random_quote = self._cache_user_messages.get(username)
 
             most_active.append(
                 User(
