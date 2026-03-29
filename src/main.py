@@ -13,7 +13,7 @@ import pathlib
 import random
 import re
 import time
-import tomllib
+import tomlkit
 import sys
 
 from jinja2 import Environment, FileSystemLoader
@@ -151,10 +151,10 @@ class APIClient:
         self._cache = {}
 
         with open(credentials_path, "rb") as fd:
-            data = tomllib.load(fd)
+            data = tomlkit.load(fd)
             try:
-                with open(self._UID_CACHE_PATH, "rb") as fd:
-                    self._cache = tomllib.load(fd)
+                with open(self._UID_CACHE_PATH, "rb") as cache_fd:
+                    self._cache = tomlkit.load(cache_fd)
             except OSError:
                 pass
 
@@ -170,8 +170,8 @@ class APIClient:
                 data = self.api.user(f"@{username}")
                 self._cache[username] = data.id
                 try:
-                    with open(self._UID_CACHE_PATH, "a") as fd:
-                        fd.write(f"\"{username}\" = {data.id}\n")
+                    with open(self._UID_CACHE_PATH, "w") as fd:
+                        tomlkit.dump(self._cache, fd)
                 except OSError:
                     pass  # don't sweat over it
             except Exception as e:
@@ -204,7 +204,7 @@ class ReservoirSampler:
 class Main:
     def __init__(self, config_path: str, channel: str, api_credentials_path: str):
         with open(config_path, "rb") as fd:
-            data = tomllib.load(fd)
+            data = tomlkit.load(fd)
             self.config = GeneratorConfig(
                 files=FileConfig(**data["files"]),
                 date=DateConfig(**data["date"])
